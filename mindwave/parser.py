@@ -73,26 +73,41 @@ class Parser(object):
         attention = int.from_bytes(data[28], 'big')
         meditiation = int.from_bytes(data[30], 'big')
 
+        max_uint = int.from_bytes(b'\xff\xff\xff', 'big')
+
         return {
             "type": "ASIC",
-            "poor": poor_signal,
+            "poor": poor_signal / 100,
             "ASIC": {
-                "delta": int.from_bytes(delta_bytes, 'big'),
-                "theta": int.from_bytes(theta_bytes, 'big'),
-                "low_aplha": int.from_bytes(low_alpha_bytes, 'big'),
-                "high_alpha": int.from_bytes(high_alpha_bytes, 'big'),
-                "low_beta": int.from_bytes(low_beta_bytes, 'big'),
-                "high_beta": int.from_bytes(high_beta_bytes, 'big'),
-                "low_gamma": int.from_bytes(low_gamma_bytes, 'big'),
-                "mid_gamma": int.from_bytes(mid_gamma_bytes, 'big')
+                "delta": int.from_bytes(delta_bytes, 'big') / max_uint,
+                "theta": int.from_bytes(theta_bytes, 'big') / max_uint,
+                "low_aplha": int.from_bytes(low_alpha_bytes, 'big') / max_uint,
+                "high_alpha": int.from_bytes(high_alpha_bytes, 'big') / max_uint,
+                "low_beta": int.from_bytes(low_beta_bytes, 'big') / max_uint,
+                "high_beta": int.from_bytes(high_beta_bytes, 'big') / max_uint,
+                "low_gamma": int.from_bytes(low_gamma_bytes, 'big') / max_uint,
+                "mid_gamma": int.from_bytes(mid_gamma_bytes, 'big') / max_uint
             },
-            "attention": attention,
-            "meditiation": meditiation
+            "attention": attention / 100,
+            "meditiation": meditiation / 100
         }
 
 
     def parse_RAW(self, data):
-        return None
+
+        value = [
+            int.from_bytes(data[1], 'big'), 
+            int.from_bytes(data[2], 'big')
+        ]
+        raw = value[0]*256 + value[1]
+        if raw >= 32768:
+            raw = raw - 65536
+        raw = raw / 32768
+
+        return {
+            "type": "RAW",
+            "value": raw
+        }
 
 
     def get_payload(self):

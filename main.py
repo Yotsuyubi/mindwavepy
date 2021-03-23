@@ -1,11 +1,10 @@
-from mindwave import Mindwave, Parser
+from mindwave import Mindwave
 
 mindwave = Mindwave()
 mindwave.connect('/dev/rfcomm0')
-parser = Parser(mindwave)
 
 while True:
-    data = parser()
+    data = mindwave.parse()
     if data:
         print(data)
 
