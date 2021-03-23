@@ -8,6 +8,7 @@ pyserial = "*"
 
 [dev-packages]
 pylint = "*"
+pipenv-setup = "*"
 
 [requires]
 python_version = "3.8"
