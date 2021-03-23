@@ -1,4 +1,4 @@
-from mindwave import Mindwave
+from mindwavepy import Mindwave
 
 mindwave = Mindwave()
 mindwave.connect('/dev/rfcomm0')
