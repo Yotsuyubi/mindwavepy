@@ -42,12 +42,12 @@ class Parser(object):
             if p != EXCODE:
                 break
             excode_count = excode_count + 1
-        
+
         payload = payload[excode_count:]
 
         code = payload[0]
         data = payload[1:]
-        
+
         if code == RAW:
             return self.parse_RAW(data)
 
@@ -73,20 +73,20 @@ class Parser(object):
         attention = int.from_bytes(data[28], 'big')
         meditiation = int.from_bytes(data[30], 'big')
 
-        max_uint = int.from_bytes(b'\xff\xff\xff', 'big')
+        max_uint = 8_388_608
 
         return {
             "type": "ASIC",
             "poor": poor_signal / 100,
             "ASIC": {
-                "delta": int.from_bytes(delta_bytes, 'big') / max_uint,
-                "theta": int.from_bytes(theta_bytes, 'big') / max_uint,
-                "low_aplha": int.from_bytes(low_alpha_bytes, 'big') / max_uint,
-                "high_alpha": int.from_bytes(high_alpha_bytes, 'big') / max_uint,
-                "low_beta": int.from_bytes(low_beta_bytes, 'big') / max_uint,
-                "high_beta": int.from_bytes(high_beta_bytes, 'big') / max_uint,
-                "low_gamma": int.from_bytes(low_gamma_bytes, 'big') / max_uint,
-                "mid_gamma": int.from_bytes(mid_gamma_bytes, 'big') / max_uint
+                "delta": int.from_bytes(delta_bytes, 'big') / max_uint *0.5 +0.5,
+                "theta": int.from_bytes(theta_bytes, 'big') / max_uint *0.5 +0.5,
+                "low_aplha": int.from_bytes(low_alpha_bytes, 'big') / max_uint *0.5 +0.5,
+                "high_alpha": int.from_bytes(high_alpha_bytes, 'big') / max_uint *0.5 +0.5,
+                "low_beta": int.from_bytes(low_beta_bytes, 'big') / max_uint *0.5 +0.5,
+                "high_beta": int.from_bytes(high_beta_bytes, 'big') / max_uint *0.5 +0.5,
+                "low_gamma": int.from_bytes(low_gamma_bytes, 'big') / max_uint *0.5 +0.5,
+                "mid_gamma": int.from_bytes(mid_gamma_bytes, 'big') / max_uint *0.5 +0.5,
             },
             "attention": attention / 100,
             "meditiation": meditiation / 100
@@ -96,7 +96,7 @@ class Parser(object):
     def parse_RAW(self, data):
 
         value = [
-            int.from_bytes(data[1], 'big'), 
+            int.from_bytes(data[1], 'big'),
             int.from_bytes(data[2], 'big')
         ]
         raw = value[0]*256 + value[1]
@@ -133,7 +133,7 @@ class Parser(object):
 
         return payload
 
-    
+
     def read_SYNC(self):
         byte = self.serial.read_byte()
         return byte
@@ -155,7 +155,7 @@ class Parser(object):
     def read_PAYLOAD(self):
         return [self.serial.read_byte() for i in range(int.from_bytes(self.PLENGTH, 'big'))]
 
-    
+
     def read_CHKSUM(self):
         return self.serial.read_byte()
 
